@@ -1,0 +1,17 @@
+{
+  "name": "moving-labels-qr",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

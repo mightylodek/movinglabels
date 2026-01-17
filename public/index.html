@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Moving Box QR Labels</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <!-- Profile Selection Screen -->
+    <div id="profile-screen" class="screen active">
+        <header>
+            <h1>Select Profile</h1>
+        </header>
+        
+        <main class="profile-main">
+            <div id="profiles-list" class="profiles-list"></div>
+            
+            <div class="add-profile-section">
+                <label for="new-profile-name">Add New Profile</label>
+                <div class="add-profile-input">
+                    <input type="text" id="new-profile-name" placeholder="Enter name">
+                    <button id="add-profile-btn" class="btn-primary">Add</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen hidden">
+        <header>
+            <h1>Moving Box Labels</h1>
+            <button id="switch-profile-btn" class="btn-secondary">Switch Profile</button>
+        </header>
+        
+        <main class="home-main">
+            <div class="home-buttons">
+                <button id="create-label-btn" class="btn-primary large">Create Label</button>
+                <button id="view-boxes-btn" class="btn-primary large">View Boxes</button>
+                <button id="list-boxes-btn" class="btn-primary large">List Boxes</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Capture Screen -->
+    <div id="capture-screen" class="screen hidden">
+        <header>
+            <h1>New Box</h1>
+            <button id="back-to-home" class="btn-secondary">Home</button>
+        </header>
+        
+        <main class="capture-main">
+            <!-- Photo Preview -->
+            <div class="photo-section">
+                <div id="photo-preview" class="photo-preview hidden">
+                    <img id="preview-img" src="" alt="Box photo">
+                    <button id="retake-photo" class="btn-secondary">Change Photo</button>
+                </div>
+                <div id="photo-placeholder" class="photo-placeholder">
+                    <div class="photo-buttons">
+                        <button id="camera-btn" class="btn-primary">
+                            📷 Take Photo
+                        </button>
+                        <button id="upload-btn" class="btn-primary">
+                            📁 Upload Image
+                        </button>
+                    </div>
+                    <input type="file" id="photo-input" accept="image/*" capture="environment" class="hidden">
+                    <input type="file" id="upload-input" accept="image/*" class="hidden">
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            <form id="box-form" class="box-form">
+                <div class="form-group">
+                    <label for="description">Description (optional)</label>
+                    <input type="text" id="description" placeholder="e.g., Small appliances and baking tools" maxlength="60">
+                </div>
+
+                <div class="form-group">
+                    <label>From Room(s) - Select all that apply</label>
+                    <div class="checkbox-group" id="from-rooms-group">
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Master Bedroom"> Master Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Master Bathroom"> Master Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Kids Bedroom"> Kids Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Kids Bathroom"> Kids Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Kitchen"> Kitchen</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Mud Room"> Mud Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Living Room"> Living Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Office"> Office</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Music Room"> Music Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Workout Room"> Workout Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Garage"> Garage</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Other"> Other</label>
+                        <label class="checkbox-label"><input type="checkbox" name="from-room" value="Custom" id="from-room-custom-check"> Custom</label>
+                    </div>
+                    <input type="text" id="from-room-custom-input" placeholder="Enter custom room" class="hidden">
+                </div>
+
+                <div class="form-group">
+                    <label>To Room(s) - Select all that apply</label>
+                    <div class="checkbox-group" id="to-rooms-group">
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Master Bedroom"> Master Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Master Bathroom"> Master Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Kids Bedroom"> Kids Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Kids Bathroom"> Kids Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Kitchen"> Kitchen</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Mud Room"> Mud Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Living Room"> Living Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Office"> Office</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Music Room"> Music Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Workout Room"> Workout Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Garage"> Garage</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Other"> Other</label>
+                        <label class="checkbox-label"><input type="checkbox" name="to-room" value="Custom" id="to-room-custom-check"> Custom</label>
+                    </div>
+                    <input type="text" id="to-room-custom-input" placeholder="Enter custom room" class="hidden">
+                </div>
+
+                <button type="submit" id="save-btn" class="btn-primary large" disabled>
+                    Save & Generate Labels
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <!-- Print Preview Screen -->
+    <div id="print-screen" class="screen hidden">
+        <header>
+            <h1>Print Labels</h1>
+            <button id="back-to-capture" class="btn-secondary">Back</button>
+        </header>
+        
+        <main class="print-main">
+            <div class="print-info">
+                <p>Preparing labels for printing on Avery 5264 (3⅓" × 4") sheets.</p>
+                <p>3 labels will be printed on the left column using absolute positioning to match Avery's template exactly.</p>
+            </div>
+            
+            <div id="labels-container" class="labels-container"></div>
+            
+            <div class="print-actions">
+                <button id="print-btn" class="btn-primary large">Print Labels</button>
+                <button id="new-box-btn" class="btn-secondary">Create Another Box</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Box Detail Screen (QR destination) -->
+    <div id="detail-screen" class="screen hidden">
+        <header>
+            <h1 id="detail-box-id">Box Details</h1>
+            <button id="back-to-list" class="btn-secondary">Back</button>
+        </header>
+        
+        <main class="detail-main">
+            <div id="box-detail-content"></div>
+        </main>
+    </div>
+
+    <!-- Edit Screen -->
+    <div id="edit-screen" class="screen hidden">
+        <header>
+            <h1 id="edit-box-id">Edit Box</h1>
+            <button id="back-to-detail" class="btn-secondary">Cancel</button>
+        </header>
+        
+        <main class="capture-main">
+            <!-- Photo Preview -->
+            <div class="photo-section">
+                <div id="edit-photo-preview" class="photo-preview">
+                    <img id="edit-preview-img" src="" alt="Box photo">
+                    <button id="edit-change-photo" class="btn-secondary">Change Photo</button>
+                </div>
+                <div id="edit-photo-placeholder" class="photo-placeholder hidden">
+                    <div class="photo-buttons">
+                        <button id="edit-camera-btn" class="btn-primary">
+                            📷 Take Photo
+                        </button>
+                        <button id="edit-upload-btn" class="btn-primary">
+                            📁 Upload Image
+                        </button>
+                    </div>
+                    <input type="file" id="edit-photo-input" accept="image/*" capture="environment" class="hidden">
+                    <input type="file" id="edit-upload-input" accept="image/*" class="hidden">
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            <form id="edit-box-form" class="box-form">
+                <div class="form-group">
+                    <label for="edit-description">Description (optional)</label>
+                    <input type="text" id="edit-description" placeholder="e.g., Small appliances and baking tools" maxlength="60">
+                </div>
+
+                <div class="form-group">
+                    <label>From Room(s) - Select all that apply</label>
+                    <div class="checkbox-group" id="edit-from-rooms-group">
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Master Bedroom"> Master Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Master Bathroom"> Master Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Kids Bedroom"> Kids Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Kids Bathroom"> Kids Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Kitchen"> Kitchen</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Mud Room"> Mud Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Living Room"> Living Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Office"> Office</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Music Room"> Music Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Workout Room"> Workout Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Garage"> Garage</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Other"> Other</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-from-room" value="Custom" id="edit-from-room-custom-check"> Custom</label>
+                    </div>
+                    <input type="text" id="edit-from-room-custom-input" placeholder="Enter custom room" class="hidden">
+                </div>
+
+                <div class="form-group">
+                    <label>To Room(s) - Select all that apply</label>
+                    <div class="checkbox-group" id="edit-to-rooms-group">
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Master Bedroom"> Master Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Master Bathroom"> Master Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Kids Bedroom"> Kids Bedroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Kids Bathroom"> Kids Bathroom</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Kitchen"> Kitchen</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Mud Room"> Mud Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Living Room"> Living Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Office"> Office</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Music Room"> Music Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Workout Room"> Workout Room</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Garage"> Garage</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Other"> Other</label>
+                        <label class="checkbox-label"><input type="checkbox" name="edit-to-room" value="Custom" id="edit-to-room-custom-check"> Custom</label>
+                    </div>
+                    <input type="text" id="edit-to-room-custom-input" placeholder="Enter custom room" class="hidden">
+                </div>
+
+                <button type="submit" id="edit-save-btn" class="btn-primary large">
+                    Save Changes
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <!-- Box Grid View Screen -->
+    <div id="grid-screen" class="screen hidden">
+        <header>
+            <h1>View Boxes</h1>
+            <div class="header-actions">
+                <button id="print-selected-btn" class="btn-primary hidden" title="Print selected boxes">
+                    🖨️ Print Selected (<span id="selected-count">0</span>)
+                </button>
+                <button id="back-to-home-from-grid" class="btn-secondary">Home</button>
+            </div>
+        </header>
+        
+        <main class="grid-main">
+            <div id="boxes-grid" class="boxes-grid"></div>
+        </main>
+    </div>
+
+    <!-- Box List Screen -->
+    <div id="list-screen" class="screen hidden">
+        <header>
+            <h1>List Boxes</h1>
+            <button id="back-to-home-from-list" class="btn-secondary">Home</button>
+        </header>
+        
+        <main class="list-main">
+            <div class="search-section">
+                <div class="search-input-wrapper">
+                    <input type="text" id="box-search-input" class="search-input" placeholder="Search boxes by description, room, box ID, date, or packed by...">
+                    <button id="clear-search-btn" class="clear-search-btn hidden" title="Clear search">✕</button>
+                </div>
+            </div>
+            <div id="boxes-list" class="boxes-list"></div>
+        </main>
+    </div>
+
+    <script src="/qrcode.min.js"></script>
+    <script type="module" src="/app.js"></script>
+</body>
+</html>

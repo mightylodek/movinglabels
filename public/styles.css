@@ -1,0 +1,1135 @@
+/* Reset and Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a1a;
+    --border-color: #ddd;
+    --primary-color: #0066cc;
+    --primary-hover: #0052a3;
+    --secondary-color: #6c757d;
+    --secondary-hover: #5a6268;
+    --input-bg: #ffffff;
+    --card-bg: #f8f9fa;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a1a1a;
+        --text-color: #e0e0e0;
+        --border-color: #444;
+        --primary-color: #4da6ff;
+        --primary-hover: #3399ff;
+        --secondary-color: #6c757d;
+        --secondary-hover: #5a6268;
+        --input-bg: #2d2d2d;
+        --card-bg: #252525;
+    }
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+/* Header */
+header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.header-actions .btn-primary.hidden {
+    display: none;
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    padding: 1rem;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+/* Buttons */
+button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+    min-height: 44px; /* Large tap target */
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-hover);
+}
+
+.btn-primary.large {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+/* Photo Section */
+.photo-section {
+    margin-bottom: 1.5rem;
+}
+
+.photo-preview {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+}
+
+.photo-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.photo-preview button {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.photo-placeholder {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 2rem 1rem;
+    text-align: center;
+    background-color: var(--card-bg);
+}
+
+.photo-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.photo-buttons button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Form */
+.box-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    min-height: 44px; /* Large tap target */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Profile Selection */
+.profile-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profiles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-button {
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1.2rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Ensure profile button text is visible in both light and dark mode */
+@media (prefers-color-scheme: dark) {
+    .profile-button {
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+}
+
+.profile-button:active {
+    transform: scale(0.98);
+}
+
+.profile-button:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+    background-color: var(--input-bg);
+}
+
+.profile-button:active {
+    transform: scale(0.98);
+    background-color: var(--input-bg);
+}
+
+.add-profile-section {
+    padding-top: 1rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.add-profile-section label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.add-profile-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.add-profile-input input {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    min-height: 44px;
+}
+
+.add-profile-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Home Screen */
+.home-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+.home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Checkbox Groups */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-weight: normal;
+    min-height: 44px; /* Large tap target */
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.checkbox-label:hover {
+    background-color: var(--input-bg);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Box List */
+.search-section {
+    margin-bottom: 1.5rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--secondary-color);
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    border-radius: 4px;
+}
+
+.clear-search-btn:hover {
+    color: var(--text-color);
+    background-color: var(--border-color);
+}
+
+.clear-search-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.clear-search-btn.hidden {
+    display: none;
+}
+
+.grid-main {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.list-main {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Grid View Styles */
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.grid-box-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.1s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.grid-box-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.grid-box-card:active {
+    transform: translateY(0);
+}
+
+.grid-box-card-selected {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.grid-box-checkbox {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    z-index: 10;
+    accent-color: var(--primary-color);
+    transition: transform 0.1s;
+}
+
+.grid-box-checkbox:hover {
+    transform: scale(1.1);
+}
+
+.grid-box-content {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.grid-box-image {
+    width: 100%;
+    height: 200px;
+    background-color: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.grid-box-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.grid-box-image-placeholder {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.grid-box-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.grid-box-id {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.grid-box-description {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    line-height: 1.4;
+    flex: 1;
+}
+
+.grid-box-rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    margin-top: 0.5rem;
+}
+
+.grid-box-room-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.grid-box-room-label {
+    font-weight: 500;
+    color: var(--secondary-color);
+    min-width: 45px;
+}
+
+.grid-box-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.grid-box-date {
+    font-style: normal;
+}
+
+.grid-box-profile {
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .boxes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+    
+    .grid-box-image {
+        height: 150px;
+    }
+}
+
+.boxes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.box-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    transition: box-shadow 0.2s;
+    position: relative;
+}
+
+.box-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.box-card-content {
+    flex: 1;
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.box-card-content:active {
+    transform: scale(0.98);
+}
+
+.box-delete-btn {
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    border-radius: 0 8px 8px 0;
+}
+
+.box-delete-btn:hover {
+    background-color: #fee;
+    color: #c33;
+}
+
+.box-delete-btn:active {
+    background-color: #fcc;
+}
+
+.box-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.box-id {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.box-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.box-date {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+}
+
+.box-profile {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    font-style: italic;
+}
+
+.box-description {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.box-rooms {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.box-card-deleted {
+    opacity: 0.7;
+    background-color: var(--input-bg);
+    border-color: #888;
+    border-style: dashed;
+}
+
+.deleted-boxes-separator {
+    margin: 2rem 0 1rem 0;
+    padding: 1rem;
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+    text-align: center;
+    font-weight: bold;
+    color: var(--secondary-color);
+    background-color: var(--input-bg);
+}
+
+.deleted-boxes-separator span {
+    font-size: 0.9rem;
+}
+
+.box-restore-btn {
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    border-radius: 0 8px 8px 0;
+}
+
+.box-restore-btn:hover {
+    background-color: #efe;
+    color: #3c3;
+}
+
+.box-restore-btn:active {
+    background-color: #dfd;
+}
+
+.show-deleted-toggle {
+    margin-top: 2rem;
+    padding: 1rem;
+    text-align: center;
+    border-top: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.show-deleted-toggle label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+}
+
+.show-deleted-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Detail View */
+.detail-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.detail-photo {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+}
+
+.detail-photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.detail-info {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.detail-info-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-info-label {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.25rem;
+}
+
+.detail-info-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.detail-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.detail-actions button {
+    width: 100%;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-danger:active {
+    background-color: #bd2130;
+}
+
+/* Print Section */
+.print-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.print-info {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.9rem;
+}
+
+.print-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Labels Container (for preview) */
+.labels-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.label-preview {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: var(--card-bg);
+}
+
+.label-preview h3 {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Label sheet - hidden on screen */
+.label-sheet {
+    display: none;
+}
+
+/* Avery 5264: 4" × 3⅓" labels (VERIFIED FULL SHEET GEOMETRY) */
+/* Standard sheet: 8.5" × 11", 2 columns × 3 rows = 6 labels */
+/* We print exactly 3 labels per box on left column using absolute positioning */
+/* Label size: 4.0in wide × 3.333333in tall */
+/* Verified margins: Left 0.156in, Top 0.5in, Inter-column gap 0.188in */
+/* Left column positions: Slot 1 at 0.5in, Slot 2 at 3.833333in, Slot 3 at 7.166666in */
+/* Right column positions defined for reusable sheet support */
+
+    /* Print Styles for Avery Labels */
+    @media print {
+        @page {
+            size: letter;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Global print styles - prevent overflow and ensure exact colors */
+        * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: white;
+            margin: 0;
+            padding: 0;
+            width: 8.5in;
+            height: 11in;
+            max-width: 8.5in;
+            max-height: 11in;
+            overflow: visible !important;
+            position: relative;
+        }
+
+        .screen,
+        header,
+        button,
+        .print-info,
+        .print-actions,
+        .label-preview {
+            display: none !important;
+        }
+
+        .labels-container {
+            display: none !important;
+        }
+
+        /* Show label sheet in print mode */
+        .label-sheet {
+            display: block !important;
+            position: relative;
+            width: 8.5in;
+            height: 11in;
+            margin: 0;
+            padding: 0;
+            overflow: visible !important;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        /* Avery 5264: 3⅓" × 4" labels - Left column only, exactly 3 labels */
+        /* Using absolute positioning to match Avery's physical template exactly */
+
+        .label {
+            position: absolute;
+            width: 4in;
+            height: 3.333333in;
+            max-width: 4in;
+            max-height: 3.333333in;
+            min-height: 3.333333in;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-size: 10pt;
+            border: 0.5pt solid black;
+            box-sizing: border-box;
+            overflow: hidden !important;
+            contain: layout style paint;
+        }
+
+        /* Avery 5264 verified slot positions - Left column only */
+        /* Vertical pitch = 3.333333in: Slot 1 at 0.5in, Slot 2 at 3.833333in, Slot 3 at 7.166666in */
+        /* Left margin: 0.156in (verified geometry) */
+        .left.slot-1,
+        .slot-1 {
+            top: 0.5in;
+            left: 0.156in;
+        }
+
+        .left.slot-2,
+        .slot-2 {
+            top: 3.833333in;
+            left: 0.156in;
+        }
+
+        .left.slot-3,
+        .slot-3 {
+            top: 7.166666in;
+            left: 0.156in;
+        }
+
+        /* Right column positions (for future use - reusable sheet) */
+        /* Right column left position: 0.156 + 4.0 + 0.188 = 4.344in */
+        .right.slot-1 {
+            top: 0.5in;
+            left: 4.344in;
+        }
+
+        .right.slot-2 {
+            top: 3.833333in;
+            left: 4.344in;
+        }
+
+        .right.slot-3 {
+            top: 7.166666in;
+            left: 4.344in;
+        }
+
+        /* Label Header - Box Number + Room Flow */
+        .label-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 0.08in;
+            flex-shrink: 0;
+            height: 0.35in;
+            min-height: 0.35in;
+            max-height: 0.35in;
+            padding-left: 0.15in;
+            padding-right: 0.15in;
+            padding-top: 0.15in;
+        }
+
+        .box-number {
+            font-size: 22pt;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .room-flow {
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        /* Description - Constrained */
+        .label-description {
+            font-size: 10pt;
+            line-height: 1.2;
+            max-height: 0.35in;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.08in;
+            flex-shrink: 0;
+            min-height: 0.35in;
+            padding-left: 0.15in;
+            padding-right: 0.15in;
+        }
+
+        /* Media Row - Image + QR Code */
+        .media-row {
+            display: grid;
+            grid-template-columns: 1fr 160px;
+            align-items: center;
+            gap: 0.1in;
+            flex: 0 0 auto;
+            height: 160px;
+            min-height: 160px;
+            max-height: 160px;
+            margin-bottom: 0.05in;
+            padding-left: 0.15in;
+            padding-right: 0.15in;
+        }
+
+        .label-photo {
+            max-width: 100%;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 1;
+        }
+
+        .label-qr {
+            width: 160px;
+            height: 160px;
+            min-width: 160px;
+            min-height: 160px;
+            max-width: 160px;
+            max-height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .label-qr img {
+            width: 160px !important;
+            height: 160px !important;
+            min-width: 160px;
+            min-height: 160px;
+            max-width: 160px;
+            max-height: 160px;
+            /* NO SCALING - render at final pixel size */
+        }
+
+        /* QR Debug Mode - Display exact payload string */
+        .qr-debug {
+            font-family: monospace;
+            font-size: 6pt;
+            line-height: 1.1;
+            word-break: break-all;
+            margin-top: 0.02in;
+            margin-bottom: 0;
+            max-height: 0.2in;
+            min-height: 0.2in;
+            overflow: hidden;
+            color: #333;
+            flex-shrink: 0;
+            padding-left: 0.15in;
+            padding-right: 0.15in;
+        }
+
+        .qr-debug-label {
+            font-weight: bold;
+            margin-right: 0.05in;
+        }
+
+        .qr-debug-value {
+            color: #000;
+        }
+
+        /* Footer - Date and Packed By */
+        .label-footer {
+            position: absolute;
+            bottom: 0.15in;
+            left: 0.15in;
+            right: 0.15in;
+            font-size: 7pt;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            line-height: 1;
+            height: 0.18in;
+            min-height: 0.18in;
+            max-height: 0.18in;
+            flex-shrink: 0;
+        }
+
+
+    /* Hide preview labels when printing */
+    .label-preview {
+        display: none;
+    }
+}

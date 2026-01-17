@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 1rem;
+            background-color: #f5f5f5;
+        }
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .detail-photo {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .detail-photo img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        .detail-info {
+            margin-top: 2rem;
+        }
+        .detail-info-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-info-item:last-child {
+            border-bottom: none;
+        }
+        .detail-info-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .detail-info-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .box-id {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <div class="box-id" id="box-id"></div>
+        <div class="detail-photo">
+            <img id="box-photo" src="" alt="Box contents">
+        </div>
+        <div class="detail-info" id="box-info"></div>
+    </div>
+
+    <script>
+        // Get box ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const boxId = pathParts[pathParts.length - 1];
+
+        // Fetch box data from API
+        fetch(`/api/boxes/${boxId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Box not found');
+                }
+                return response.json();
+            })
+            .then(box => {
+                document.getElementById('box-id').textContent = box.box_id;
+                // Use photo_path (base64) if photo_url doesn't exist
+                const photoUrl = box.photo_url || box.photo_path || '';
+                document.getElementById('box-photo').src = photoUrl;
+                
+                const infoHtml = `
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Description</div>
+                        <div class="detail-info-value">${box.short_description}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">From Room(s)</div>
+                        <div class="detail-info-value">${box.from_room}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">To Room(s)</div>
+                        <div class="detail-info-value">${box.to_room}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Date Packed</div>
+                        <div class="detail-info-value">${box.date_created}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Packed By</div>
+                        <div class="detail-info-value">${box.packed_by}</div>
+                    </div>
+                `;
+                document.getElementById('box-info').innerHTML = infoHtml;
+            })
+            .catch(error => {
+                document.querySelector('.detail-container').innerHTML = `
+                    <h1>Box Not Found</h1>
+                    <p>${error.message}</p>
+                `;
+            });
+    </script>
+</body>
+</html>
