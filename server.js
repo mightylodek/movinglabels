@@ -483,9 +483,26 @@ app.post('/api/generate-pdf', async (req, res) => {
     console.log('[PDF] Label HTML preview:', labelHtml.substring(0, 200));
 
     console.log('[PDF] Launching Playwright browser...');
-    browser = await chromium.launch({
-      headless: true
-    });
+    // Use system Chromium if available (for Docker), otherwise use Playwright's bundled browser
+    const launchOptions = {
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Required for Docker
+    };
+    
+    // Check for system Chromium executable (Docker/container environments)
+    const systemChromium = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium-browser';
+    try {
+      if (fs.existsSync(systemChromium)) {
+        launchOptions.executablePath = systemChromium;
+        console.log('[PDF] Using system Chromium:', systemChromium);
+      } else {
+        console.log('[PDF] System Chromium not found at:', systemChromium, '- using Playwright bundled browser');
+      }
+    } catch (e) {
+      console.log('[PDF] Error checking for system Chromium:', e.message, '- using Playwright bundled browser');
+    }
+    
+    browser = await chromium.launch(launchOptions);
     console.log('[PDF] Browser launched successfully');
 
     const page = await browser.newPage();
