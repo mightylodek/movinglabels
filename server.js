@@ -47,6 +47,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Simple password authentication
 app.post('/api/auth/login', (req, res) => {
   try {
