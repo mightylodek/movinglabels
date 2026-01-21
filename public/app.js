@@ -1,5 +1,5 @@
 // Import API functions
-import { getProfiles, createProfile, getBoxes, getBox, createBox, updateBox, deleteBox as deleteBoxAPI, restoreBox } from './api.js';
+import { getProfiles, createProfile, getBoxes, getBox, createBox, updateBox, deleteBox as deleteBoxAPI, restoreBox, login } from './api.js';
 
 // Base URL for QR codes - loaded from server configuration
 let QR_BASE_URL = window.location.origin; // Default to current origin
@@ -12,9 +12,10 @@ let currentBoxId = null;
 let currentProfile = null;
 let profiles = [];
 let isSubmitting = false; // Prevent double submission
-let showDeletedBoxes = false; // Toggle for showing deleted boxes
+let showDeletedBoxes = false; // Checkbox toggle for showing deleted boxes
 let previousScreen = null; // Track previous screen for back navigation
 let selectedBoxIds = new Set(); // Track selected boxes for bulk printing
+let isAuthenticated = false; // Simple auth flag
 
 // Load QR_BASE_URL from server configuration
 async function loadConfig() {
@@ -24,10 +25,15 @@ async function loadConfig() {
         if (config.qrBaseUrl) {
             QR_BASE_URL = config.qrBaseUrl;
             console.log('QR Base URL loaded from server:', QR_BASE_URL);
+        } else {
+            // Server didn't provide one, use current origin
+            QR_BASE_URL = window.location.origin;
+            console.log('QR Base URL using current origin:', QR_BASE_URL);
         }
     } catch (error) {
-        console.warn('Failed to load config, using default:', error);
-        // Keep default value (window.location.origin)
+        console.warn('Failed to load config, using current origin:', error);
+        // Use current origin as fallback
+        QR_BASE_URL = window.location.origin;
     }
 }
 
@@ -36,9 +42,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load configuration first
     await loadConfig();
     
+    // Check authentication first
+    const savedAuth = sessionStorage.getItem('authenticated');
+    if (savedAuth === 'true') {
+        isAuthenticated = true;
+        await afterLogin();
+    } else {
+        showLoginScreen();
+    }
+    
+    setupEventListeners();
+});
+
+// After successful login
+async function afterLogin() {
     await loadProfiles();
     await loadBoxes();
-    setupEventListeners();
     
     // Check if profile is selected (from sessionStorage for current session)
     const savedProfile = sessionStorage.getItem('currentProfile');
@@ -48,7 +67,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         showProfileScreen();
     }
-});
+}
+
+// Show login screen
+function showLoginScreen() {
+    showScreen('login-screen');
+    // Clear login message
+    const messageEl = document.getElementById('login-message');
+    if (messageEl) {
+        messageEl.textContent = '';
+    }
+}
 
 // Profile Management - API-based
 async function loadProfiles() {
@@ -137,6 +166,18 @@ async function getNextBoxId() {
 
 // Setup event listeners
 function setupEventListeners() {
+    // Login screen
+    document.getElementById('login-submit-btn').addEventListener('click', async () => {
+        await handleLogin();
+    });
+    
+    // Allow Enter key to submit password
+    document.getElementById('password-input').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            await handleLogin();
+        }
+    });
+    
     // Profile screen
     document.getElementById('add-profile-btn').addEventListener('click', async () => {
         const input = document.getElementById('new-profile-name');
@@ -295,9 +336,10 @@ function setupEventListeners() {
         resetForm();
     });
     
-    document.getElementById('print-btn').addEventListener('click', () => {
-        window.print();
+    document.getElementById('print-btn').addEventListener('click', async () => {
+        await generatePDFFromLabels();
     });
+    
 
     // List screen
     document.getElementById('back-to-home-from-list').addEventListener('click', () => {
@@ -431,6 +473,61 @@ function setupEventListeners() {
             filterBoxes('');
             updateClearButtonVisibility('');
         });
+    }
+}
+
+// Simple password login
+async function handleLogin() {
+    const passwordInput = document.getElementById('password-input');
+    const password = passwordInput ? passwordInput.value : '';
+    
+    if (!password) {
+        alert('Please enter a password');
+        return;
+    }
+    
+    const messageEl = document.getElementById('login-message');
+    const submitBtn = document.getElementById('login-submit-btn');
+    
+    if (!messageEl || !submitBtn) {
+        console.error('Login elements not found');
+        alert('Login form not properly initialized. Please refresh the page.');
+        return;
+    }
+    
+    try {
+        console.log('Attempting login...');
+        messageEl.textContent = 'Logging in...';
+        messageEl.className = 'login-message';
+        submitBtn.disabled = true;
+        
+        const result = await login(password);
+        console.log('Login result:', result);
+        
+        if (result && result.success) {
+            isAuthenticated = true;
+            sessionStorage.setItem('authenticated', 'true');
+            messageEl.textContent = 'Login successful!';
+            messageEl.className = 'login-message success';
+            setTimeout(async () => {
+                await afterLogin();
+            }, 500);
+        } else {
+            throw new Error('Login failed: Invalid response');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack
+        });
+        messageEl.textContent = 'Login failed: ' + (error.message || 'Invalid password');
+        messageEl.className = 'login-message error';
+        submitBtn.disabled = false;
+        // Clear password field
+        if (passwordInput) {
+            passwordInput.value = '';
+        }
     }
 }
 
@@ -634,9 +731,9 @@ async function handleFormSubmit(e) {
         // Generate labels and show print screen
         // Pass the exact qrPayload (single source of truth) to generateLabels
         await generateLabels(box, qrPayload);
-        console.log('Labels generated, switching to print screen');
+        console.log('Preview generated, switching to print screen');
         
-        // Switch to print screen - this must happen after labels are generated
+        // Switch to print screen
         const printScreen = document.getElementById('print-screen');
         if (printScreen) {
             // Hide all screens
@@ -848,6 +945,126 @@ function generateQRCode(url) {
             reject(error);
         }
     });
+}
+
+// Generate PDF from current labels on the page
+async function generatePDFFromLabels() {
+    try {
+        // Get all label sheets HTML
+        const labelSheets = document.querySelectorAll('.label-sheet');
+        if (labelSheets.length === 0) {
+            alert('No labels to print. Please generate labels first.');
+            return;
+        }
+
+        // Convert label sheets to HTML string
+        const labelHtml = Array.from(labelSheets).map(sheet => sheet.outerHTML).join('');
+
+        // Show loading state
+        const printBtn = document.getElementById('print-btn');
+        const originalText = printBtn ? printBtn.textContent : '';
+        if (printBtn) {
+            printBtn.disabled = true;
+            printBtn.textContent = 'Generating PDF...';
+        }
+
+        // Send to server to generate PDF
+        const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ labelHtml })
+        });
+
+        if (!response.ok) {
+            // Check if response is JSON (error) or something else
+            const contentType = response.headers.get('content-type');
+            console.error('PDF generation failed. Status:', response.status);
+            console.error('Content-Type:', contentType);
+            
+            if (contentType && contentType.includes('application/json')) {
+                const error = await response.json();
+                console.error('Error response:', error);
+                throw new Error(error.error || 'Failed to generate PDF');
+            } else {
+                // Try to read as text to see what we got
+                const text = await response.text();
+                console.error('Non-JSON error response:', text.substring(0, 200));
+                throw new Error('Server returned an error: ' + response.status + ' ' + response.statusText);
+            }
+        }
+
+        // Check content type before downloading
+        const contentType = response.headers.get('content-type');
+        console.log('PDF response Content-Type:', contentType);
+        
+        if (!contentType || !contentType.includes('application/pdf')) {
+            const text = await response.text();
+            console.error('Response is not a PDF! Content-Type:', contentType);
+            console.error('Response preview:', text.substring(0, 500));
+            throw new Error('Server did not return a PDF file. Content-Type: ' + contentType);
+        }
+
+        // Download the PDF
+        console.log('Creating blob from response...');
+        const blob = await response.blob();
+        console.log('Blob created, size:', blob.size, 'bytes, type:', blob.type);
+        
+        if (blob.size === 0) {
+            throw new Error('Downloaded PDF file is empty (0 bytes)');
+        }
+        
+        if (blob.type !== 'application/pdf') {
+            console.warn('Blob type is not application/pdf:', blob.type);
+        }
+        
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'labels.pdf';
+        document.body.appendChild(a);
+        
+        try {
+            a.click();
+        } catch (clickError) {
+            console.error('Error triggering download:', clickError);
+            // Try alternative download method
+            window.open(url, '_blank');
+        }
+        
+        // Clean up after a short delay to ensure download started
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+        console.log('PDF download initiated');
+
+        // Restore button state
+        if (printBtn) {
+            printBtn.disabled = false;
+            printBtn.textContent = originalText;
+        }
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        console.error('Error stack:', error.stack);
+        
+        // Always restore button state BEFORE showing alert to prevent page breakage
+        const printBtn = document.getElementById('print-btn');
+        if (printBtn) {
+            printBtn.disabled = false;
+            printBtn.textContent = 'Download PDF';
+        }
+        
+        // Show error message (this won't break the page even if there's an issue)
+        try {
+            alert('Failed to generate PDF: ' + (error.message || 'Unknown error'));
+        } catch (alertError) {
+            console.error('Failed to show alert:', alertError);
+        }
+        
+        // Don't re-throw - we've handled the error, don't break navigation
+    }
 }
 
 // Generate printable label HTML for a single box (3 labels, left column)
@@ -1733,7 +1950,7 @@ window.restoreBoxFromList = async function(boxId) {
     }
 };
 
-// Print labels for a single box
+// Print box labels (from detail view)
 async function printBoxLabels(boxId, box) {
     try {
         // Generate QR code
@@ -1746,10 +1963,10 @@ async function printBoxLabels(boxId, box) {
         // Switch to print screen
         showScreen('print-screen');
         
-        // Trigger print dialog
-        setTimeout(() => {
-            window.print();
-        }, 500);
+        // Auto-generate PDF after a short delay to ensure labels are rendered
+        setTimeout(async () => {
+            await generatePDFFromLabels();
+        }, 1000);
     } catch (error) {
         console.error('Error printing labels:', error);
         alert('Failed to generate labels: ' + error.message);

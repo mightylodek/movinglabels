@@ -1,7 +1,10 @@
 node_modules/
-data/
-*.db
-*.db-journal
+# Allow data/ directory but ignore sensitive/temporary files
+data/*.db-wal
+data/*.db-shm
+data/.DS_Store
+data/backups/*.tar.gz
+# Keep .env files ignored
 .env
 .env.local
 .DS_Store

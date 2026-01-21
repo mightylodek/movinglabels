@@ -110,3 +110,48 @@ export async function restoreBox(boxId) {
     
     return await response.json();
 }
+
+// Simple password login
+export async function login(password) {
+    const url = `${API_BASE}/api/auth/login`;
+    console.log('Calling login API at:', url);
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+        
+        console.log('Login response status:', response.status);
+        console.log('Login response ok:', response.ok);
+        console.log('Login response URL:', response.url);
+        
+        const contentType = response.headers.get('content-type');
+        console.log('Login response content-type:', contentType);
+        
+        if (!response.ok) {
+            // Check if response is JSON
+            if (contentType && contentType.includes('application/json')) {
+                const error = await response.json();
+                console.error('Login error response (JSON):', error);
+                throw new Error(error.error || 'Failed to login');
+            } else {
+                // Server returned HTML or other non-JSON response (likely 404 page)
+                const text = await response.text();
+                console.error('Login error response (non-JSON):', text.substring(0, 200));
+                throw new Error(`Login endpoint not found (${response.status}). Please check if the server is running and the endpoint is correct.`);
+            }
+        }
+        
+        const result = await response.json();
+        console.log('Login success, result:', result);
+        return result;
+    } catch (error) {
+        console.error('Login fetch error:', error);
+        // Re-throw with better error message if it's a network error
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            throw new Error('Cannot connect to server. Please make sure the server is running.');
+        }
+        throw error;
+    }
+}

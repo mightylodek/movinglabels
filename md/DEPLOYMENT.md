@@ -4,10 +4,15 @@ This guide will help you deploy the Moving Box QR Labels app to a server with No
 
 ## Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 20 LTS or higher - REQUIRED)
 - npm (comes with Node.js)
 - Git (to clone from GitHub)
 - Access to your server via SSH
+
+**Important**: Use Node.js 20 LTS. Do NOT use Node 24. Verify with:
+```bash
+node -v  # Should show v20.x.x
+```
 
 ## Deployment Steps
 
@@ -27,7 +32,7 @@ cd moving_labels_qr
 npm install
 ```
 
-This will install Express and other required packages.
+This will install Express, Playwright, and other required packages. Playwright will automatically download Chromium browser binaries during installation (via postinstall script).
 
 ### 3. Create Data Directory
 

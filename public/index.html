@@ -7,8 +7,24 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <header>
+            <h1>Login</h1>
+        </header>
+        
+        <main class="login-main">
+            <div id="login-message" class="login-message"></div>
+            <div class="login-form">
+                <label for="password-input">Enter Group Password</label>
+                <input type="password" id="password-input" placeholder="Password" autocomplete="current-password">
+                <button id="login-submit-btn" class="btn-primary large">Login</button>
+            </div>
+        </main>
+    </div>
+
     <!-- Profile Selection Screen -->
-    <div id="profile-screen" class="screen active">
+    <div id="profile-screen" class="screen hidden">
         <header>
             <h1>Select Profile</h1>
         </header>
@@ -74,7 +90,7 @@
             <form id="box-form" class="box-form">
                 <div class="form-group">
                     <label for="description">Description (optional)</label>
-                    <input type="text" id="description" placeholder="e.g., Small appliances and baking tools" maxlength="60">
+                    <input type="text" id="description" placeholder="e.g., Small appliances and baking tools">
                 </div>
 
                 <div class="form-group">
@@ -133,14 +149,14 @@
         
         <main class="print-main">
             <div class="print-info">
-                <p>Preparing labels for printing on Avery 5264 (3⅓" × 4") sheets.</p>
-                <p>3 labels will be printed on the left column using absolute positioning to match Avery's template exactly.</p>
+                <p>Labels prepared for Avery 5264 (4" × 3.375") sheets.</p>
+                <p>Click "Download PDF" to generate a pixel-perfect PDF. Print at 100% scale with no margins.</p>
             </div>
             
             <div id="labels-container" class="labels-container"></div>
             
             <div class="print-actions">
-                <button id="print-btn" class="btn-primary large">Print Labels</button>
+                <button id="print-btn" class="btn-primary large">Download PDF</button>
                 <button id="new-box-btn" class="btn-secondary">Create Another Box</button>
             </div>
         </main>
@@ -190,7 +206,7 @@
             <form id="edit-box-form" class="box-form">
                 <div class="form-group">
                     <label for="edit-description">Description (optional)</label>
-                    <input type="text" id="edit-description" placeholder="e.g., Small appliances and baking tools" maxlength="60">
+                    <input type="text" id="edit-description" placeholder="e.g., Small appliances and baking tools">
                 </div>
 
                 <div class="form-group">
