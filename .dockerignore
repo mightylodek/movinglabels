@@ -1,6 +1,13 @@
 node_modules
 npm-debug.log
-data
 .git
 .gitignore
 *.md
+# Don't ignore data directory - we want to include initial data
+# But exclude temporary database files
+data/*.db-wal
+data/*.db-shm
+data/.DS_Store
+data/backups/*.tar.gz
+.env
+.env.local

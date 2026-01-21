@@ -7,15 +7,21 @@ services:
     ports:
       - "3000:3000"
     volumes:
+      # Persist data directory (database, images, profiles)
       - ./data:/app/data
     environment:
-      - PORT=3000
-      - DB_PATH=/app/data/boxes.db
-      - UPLOAD_DIR=/app/data/uploads
+      # Load from .env file or set defaults
+      - PORT=${PORT:-3000}
+      - DATA_DIR=${DATA_DIR:-./data}
+      - QR_BASE_URL=${QR_BASE_URL:-}
+      - GROUP_PASSWORD=${GROUP_PASSWORD:-changeme}
+    # Use .env file if it exists
+    env_file:
+      - .env
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/boxes', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/config', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
       timeout: 3s
       retries: 3
-      start_period: 5s
+      start_period: 10s
