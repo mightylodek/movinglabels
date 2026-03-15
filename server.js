@@ -302,21 +302,31 @@ app.get('/api/boxes/:boxId', (req, res) => {
   }
 });
 
+// Generate next box ID from max numeric id in boxes (including deleted) to avoid unique constraint
+function getNextBoxId() {
+  const row = db.prepare(`
+    SELECT MAX(CAST(REPLACE(box_id, 'BOX-', '') AS INTEGER)) AS max_num FROM boxes
+  `).get();
+  const nextNum = (row && row.max_num != null) ? row.max_num + 1 : 1;
+  return 'BOX-' + String(nextNum).padStart(6, '0');
+}
+
 // Create box
 app.post('/api/boxes', (req, res) => {
   try {
-    const { box_id, photo_path, short_description, from_room, to_room, date_created, packed_by } = req.body;
+    const { photo_path, short_description, from_room, to_room, date_created, packed_by } = req.body;
     
-    if (!photo_path || !from_room || !to_room) {
-      return res.status(400).json({ error: 'Photo, from_room, and to_room are required' });
+    if (!from_room || !to_room) {
+      return res.status(400).json({ error: 'from_room and to_room are required' });
     }
     
-    // Save image to filesystem if it's base64
-    const imagePath = saveImageToFilesystem(photo_path, box_id);
-    if (!imagePath && photo_path) {
-      // If photo_path is already a path (not base64), use it directly
-      const existingPath = photo_path.startsWith('images/') ? photo_path : null;
-      if (!existingPath) {
+    const box_id = getNextBoxId();
+    
+    // Save image to filesystem if provided (photo is optional)
+    let imagePath = null;
+    if (photo_path) {
+      imagePath = saveImageToFilesystem(photo_path, box_id);
+      if (!imagePath && photo_path.startsWith && !photo_path.startsWith('images/')) {
         console.warn('Could not save image, but continuing with box creation');
       }
     }

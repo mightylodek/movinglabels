@@ -531,13 +531,12 @@ async function handleLogin() {
     }
 }
 
-// Update save button state
+// Update save button state (photo is optional; only from/to rooms required)
 function updateSaveButton() {
     const saveBtn = document.getElementById('save-btn');
-    const hasPhoto = currentPhotoData !== null;
     const fromRooms = getSelectedRooms('from-room');
     const toRooms = getSelectedRooms('to-room');
-    saveBtn.disabled = !(hasPhoto && fromRooms.length > 0 && toRooms.length > 0);
+    saveBtn.disabled = !(fromRooms.length > 0 && toRooms.length > 0);
 }
 
 // Get selected rooms
@@ -651,17 +650,6 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // Validate required fields
-    if (!currentPhotoData) {
-        isSubmitting = false;
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save & Generate Labels';
-        }
-        alert('Please take or upload a photo');
-        return;
-    }
-    
     const fromRooms = getSelectedRooms('from-room');
     const toRooms = getSelectedRooms('to-room');
     
@@ -686,29 +674,32 @@ async function handleFormSubmit(e) {
     }
     
     try {
-        const boxId = await getNextBoxId();
         const description = document.getElementById('description').value.trim();
         const dateCreated = new Date().toISOString().split('T')[0];
 
-        // Compress image before sending (base64 in JSON)
-        console.log('Compressing image...');
-        const compressedPhoto = await compressImage(currentPhotoData);
-        console.log('Image compressed');
+        // Compress image only if one was provided (photo is optional)
+        let compressedPhoto = null;
+        if (currentPhotoData) {
+            console.log('Compressing image...');
+            compressedPhoto = await compressImage(currentPhotoData);
+            console.log('Image compressed');
+        }
         
-        // Create box via API - send base64 photo data in JSON
+        // Create box via API - server assigns unique box_id; photo_path optional
         const boxData = {
-            box_id: boxId,
-            photo_path: compressedPhoto, // Send base64 data URL
             short_description: description || 'No description',
             from_room: fromRooms.join(', '),
             to_room: toRooms.join(', '),
             date_created: dateCreated,
             packed_by: currentProfile
         };
+        if (compressedPhoto) boxData.photo_path = compressedPhoto;
 
         console.log('Creating box via API...');
         const result = await createBox(boxData);
         console.log('Box created:', result);
+
+        const boxId = result.box_id;
 
         // QR PAYLOAD - SINGLE SOURCE OF TRUTH
         // Use the server's base URL for QR codes
@@ -1220,8 +1211,11 @@ function createLabelElement(box, qrDataUrl, qrPayload) {
 
     // QR DEBUG MODE: Display the exact payload string used for QR generation
     // This is the single source of truth - same string used for both QR and display
-    // Use photo_url from API if available, otherwise fall back to photo_path
+    // Use photo_url from API if available, otherwise fall back to photo_path (photo is optional)
     const photoUrl = box.photo_url || box.photo_path;
+    const photoHtml = photoUrl
+        ? `<img src="${photoUrl}" alt="Box contents" class="label-photo">`
+        : '<div class="label-photo label-photo-placeholder">No photo</div>';
 
     label.innerHTML = `
         <div class="label-header">
@@ -1230,7 +1224,7 @@ function createLabelElement(box, qrDataUrl, qrPayload) {
         </div>
         <div class="label-description">${truncateDesc}</div>
         <div class="media-row">
-            <img src="${photoUrl}" alt="Box contents" class="label-photo">
+            ${photoHtml}
             <div class="label-qr">
                 <img src="${qrDataUrl}" alt="QR Code">
             </div>
@@ -1368,14 +1362,13 @@ window.showBoxDetail = async (boxId) => {
         window.currentDetailBoxId = boxId;
         
         const content = document.getElementById('box-detail-content');
-        // Use photo_path (base64) if photo_url doesn't exist, fallback to empty string
         const photoUrl = box.photo_url || box.photo_path || '';
-        if (!photoUrl) {
-            console.warn('Box has no photo_path or photo_url:', box);
-        }
+        const detailPhotoHtml = photoUrl
+            ? `<img src="${photoUrl}" alt="Box contents" onerror="this.style.display='none';">`
+            : '<div class="detail-photo-placeholder">No photo</div>';
         content.innerHTML = `
             <div class="detail-photo">
-                <img src="${photoUrl}" alt="Box contents" onerror="this.style.display='none';">
+                ${detailPhotoHtml}
             </div>
             <div class="detail-info">
                 <div class="detail-info-item">
